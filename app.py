@@ -17,13 +17,14 @@ def analyze_sentiment(text):
     with torch.no_grad():
         output = model(**encoded_input)
 
+    # Softmax on the output logits to get probabilities
     scores = output.logits[0].numpy()
     scores = np.exp(scores) / np.sum(np.exp(scores))  # softmax
     labels = ['Very Negative', 'Negative', 'Neutral', 'Positive', 'Very Positive']
     
-    sentiment = {labels[i]: float(scores[i]) for i in range(len(scores))}
-    top = max(sentiment, key=sentiment.get)
-    return top
+    # Get the sentiment with the highest probability
+    top_index = np.argmax(scores)
+    return labels[top_index]
 
 @app.route("/", methods=["GET", "POST"])
 def index():
